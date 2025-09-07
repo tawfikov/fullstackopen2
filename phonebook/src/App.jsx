@@ -3,6 +3,7 @@ import Filter from './components/Filter'
 import Form from './components/Form'
 import Contacts from './components/Contacts'
 import personsService from './services/persons'
+import Notification from './components/Notification'
 
 
 const App = () => {
@@ -10,6 +11,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [search, setSearch] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
 
 useEffect(() => {
   personsService
@@ -41,6 +44,10 @@ useEffect(() => {
           setPersons(persons.concat(returnedData))
           setNewName('')
           setNewNumber('')
+          setSuccessMessage(`${newName} added to phonebook`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
         })
     } else if (window.confirm(`${newName} is already added to phonebook. Do you want to replace old number?`)) {
       const updatedPerson = { ...existingPerson, number: newNumber }
@@ -50,7 +57,20 @@ useEffect(() => {
           setPersons(persons.map(p => p.id !== existingPerson.id ? p : returnedData))
           setNewName('')
           setNewNumber('')
+          setSuccessMessage(`${existingPerson.name}'s number updated`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
         })
+        .catch(error => {
+          setErrorMessage(`${existingPerson.name} has already been removed from phonebook`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+          setPersons(persons.filter(p => p.id !== existingPerson.id))
+        })
+        setNewName('')
+        setNewNumber('')
     } 
   }
 
@@ -77,6 +97,8 @@ useEffect(() => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} type='error' />
+      <Notification message={successMessage} type='success' />
       <Filter search={search} handleSearch={handleSearch}/>
       <Form
         addName={addName} newName={newName} newNumber={newNumber} handleNewNames={handleNewNames} handleNewNumbers={handleNewNumbers}
