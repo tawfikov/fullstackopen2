@@ -1,15 +1,11 @@
-const Contact = (props) => (
-  <div>
-    {props.name} ... {props.number}
-    <button onClick={()=> props.deletePerson(props.id)}>Delete</button>
-  </div>
-)
+import Contact from "./Contact"
 
 const Contacts = (props) => (
-  <div>
+  <div className="list">
     {props.toShow.map(person => 
       <Contact 
-        key={person.id} id={person.id} name={person.name} number={person.number} deletePerson={props.deletePerson}
+        key={person.id} id={person.id} name={person.name} number={person.number} 
+        deletePerson={props.deletePerson} updatePerson={props.updatePerson}
       />)}
   </div>
 )
